@@ -202,11 +202,10 @@ int main(int argc, char ** argv)
     std::vector<llama_token> last_n_tokens(n_ctx);
     std::fill(last_n_tokens.begin(), last_n_tokens.end(), 0);
 
-    if (params.interactive) {
+    if (params.interactive)
+    {
         fprintf(stderr, "== Running in interactive mode. ==\n"
-#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined (_WIN32)
                " - Press Ctrl+C to interject at any time.\n"
-#endif
                " - Press Return to return control to LLaMa.\n"
                " - If you want to submit another line, end your input in '\\'.\n\n");
         is_interacting = params.interactive_start;
@@ -243,14 +242,6 @@ int main(int argc, char ** argv)
 
                 // insert n_left/2 tokens at the start of embd from last_n_tokens
                 embd.insert(embd.begin(), last_n_tokens.begin() + n_ctx - n_left/2 - embd.size(), last_n_tokens.end() - embd.size());
-
-                //printf("\n---\n");
-                //printf("resetting: '");
-                //for (int i = 0; i < (int) embd.size(); i++) {
-                //    printf("%s", llama_token_to_str(ctx, embd[i]));
-                //}
-                //printf("'\n");
-                //printf("\n---\n");
             }
             std::cout << __FILE__ << __LINE__ << std::endl;
 
