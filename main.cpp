@@ -11,40 +11,37 @@
 #include <string>
 #include <vector>
 
-#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 #include <signal.h>
 #include <unistd.h>
-#elif defined (_WIN32)
-#include <signal.h>
-#endif
 
 static console_state con_st;
 
 static bool is_interacting = false;
 
-#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined (_WIN32)
-void sigint_handler(int signo) {
+void sigint_handler(int signo)
+{
     set_console_color(con_st, CONSOLE_COLOR_DEFAULT);
     printf("\n"); // this also force flush stdout.
-    if (signo == SIGINT) {
-        if (!is_interacting) {
+    if (signo == SIGINT)
+    {
+        if (!is_interacting)
             is_interacting=true;
-        } else {
+        else
             _exit(130);
-        }
     }
 }
-#endif
+
+// Hello, Vicuna! You are an artificial intelligence meant to answer questions and complete tasks. \
+At first, tell me, what is your name?
 
 int main(int argc, char ** argv)
 {
     gpt_params params;
     params.model = "models/llama-7B/ggml-model.bin";
+    params.use_color = true;    // use color by default
 
     if (gpt_params_parse(argc, argv, params) == false)
-    {
         return 1;
-    }
 
     // save choice to use color for later (note for later: this is a slightly awkward choice)
     con_st.use_color = params.use_color;
@@ -56,9 +53,8 @@ int main(int argc, char ** argv)
                 "expect poor results\n", __func__, params.n_ctx);
     }
 
-    if (params.seed <= 0) {
+    if (params.seed <= 0)
         params.seed = time(NULL);
-    }
 
     fprintf(stderr, "%s: seed = %d\n", __func__, params.seed);
 
@@ -153,33 +149,33 @@ int main(int argc, char ** argv)
     // determine newline token
     auto llama_token_newline = llama_tokenize(ctx, "\n", false);
 
-    if (params.verbose_prompt) {
+    if (params.verbose_prompt)
+    {
+        fprintf(stderr, "Line 151 in main!\n");
         fprintf(stderr, "\n");
         fprintf(stderr, "%s: prompt: '%s'\n", __func__, params.prompt.c_str());
         fprintf(stderr, "%s: number of tokens in prompt = %zu\n", __func__, embd_inp.size());
-        for (int i = 0; i < (int) embd_inp.size(); i++) {
+        for (int i = 0; i < (int) embd_inp.size(); i++)
             fprintf(stderr, "%6d -> '%s'\n", embd_inp[i], llama_token_to_str(ctx, embd_inp[i]));
-        }
-        if (params.n_keep > 0) {
+
+        if (params.n_keep > 0)
+        {
         fprintf(stderr, "%s: static prompt based on n_keep: '", __func__);
-            for (int i = 0; i < params.n_keep; i++) {
+            for (int i = 0; i < params.n_keep; i++)
                 fprintf(stderr, "%s", llama_token_to_str(ctx, embd_inp[i]));
-            }
             fprintf(stderr, "'\n");
         }
         fprintf(stderr, "\n");
     }
 
-    if (params.interactive) {
-#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+    if (params.interactive)
+    {
         struct sigaction sigint_action;
         sigint_action.sa_handler = sigint_handler;
         sigemptyset (&sigint_action.sa_mask);
         sigint_action.sa_flags = 0;
         sigaction(SIGINT, &sigint_action, NULL);
-#elif defined (_WIN32)
-        signal(SIGINT, sigint_handler);
-#endif
+
 
         fprintf(stderr, "%s: interactive mode on.\n", __func__);
 
@@ -420,9 +416,7 @@ int main(int argc, char ** argv)
         if (embd.back() == llama_token_eos())
         {
             if (params.instruct)
-            {
                 is_interacting = true;
-            }
             else
             {
                 fprintf(stderr, " [end of text]\n");
