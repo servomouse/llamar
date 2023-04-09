@@ -754,7 +754,6 @@ static bool llama_eval_internal(
             const int   n_past,
             const int   n_threads)
 {
-    std::cout << __FILE__ << __LINE__ << std::endl;
     const int64_t t_start_us = ggml_time_us();
 
     const int N = n_tokens;
@@ -782,23 +781,18 @@ static bool llama_eval_internal(
         /*.mem_buffer =*/ buf_compute.data(),
         /*.no_alloc   =*/ false,
     };
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     struct ggml_context * ctx0 = ggml_init(params);
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     // for big prompts, if BLAS is enabled, it is better to use only one thread
     // otherwise, the threads are spin-lock waiting for the BLAS calls and are degrading the performance
     ggml_cgraph gf = {};
     gf.n_threads = N >= 32 && ggml_cpu_has_blas() ? 1 : n_threads;
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     struct ggml_tensor * embd = ggml_new_tensor_1d(ctx0, GGML_TYPE_I32, N);
     memcpy(embd->data, tokens, N*ggml_element_size(embd));
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     struct ggml_tensor * inpL = ggml_get_rows(ctx0, model.tok_embeddings, embd);
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     for (int il = 0; il < n_layer; ++il)
     {
@@ -935,10 +929,8 @@ static bool llama_eval_internal(
         // input for next layer
         inpL = cur;
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     lctx.use_buf(ctx0, 0);
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     // used at the end to optionally extract the embeddings
     struct ggml_tensor * embeddings = NULL;
@@ -955,23 +947,18 @@ static bool llama_eval_internal(
 
         embeddings = inpL;
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     // lm_head
     inpL = ggml_mul_mat(ctx0, model.output, inpL);
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     lctx.use_buf(ctx0, -1);
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     // logits -> probs
     //inpL = ggml_soft_max(ctx0, inpL);
 
     // run the computation
     ggml_build_forward_expand(&gf, inpL);
-    std::cout << __FILE__ << __LINE__ << std::endl;
     ggml_graph_compute(ctx0, &gf);
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     //if (n_past%100 == 0) {
     //    ggml_graph_print   (&gf);
@@ -994,7 +981,6 @@ static bool llama_eval_internal(
             memcpy(logits_out.data(), (float *) ggml_get_data(inpL) + (n_vocab*(N-1)), sizeof(float)*n_vocab);
         }
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     // extract embeddings
     if (lctx.embedding.size()) {
@@ -1014,7 +1000,6 @@ static bool llama_eval_internal(
             lctx.get_buf_max_mem(0)/1024.0/1024.0,
             lctx.get_buf_max_mem(1)/1024.0/1024.0);
 #endif
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     ggml_free(ctx0);
 
@@ -1027,7 +1012,6 @@ static bool llama_eval_internal(
         lctx.t_p_eval_us += ggml_time_us() - t_start_us;
         lctx.n_p_eval += N;
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
     return true;
 }
@@ -1739,22 +1723,17 @@ int llama_eval(
                          int   n_past,
                          int   n_threads)
 {
-    std::cout << __FILE__ << __LINE__ << std::endl;
     if (!llama_eval_internal(*ctx, tokens, n_tokens, n_past, n_threads))
     {
-        std::cout << __FILE__ << __LINE__ << std::endl;
         fprintf(stderr, "%s: failed to eval\n", __func__);
         return 1;
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
     // get a more accurate load time, upon first eval
     if (!ctx->has_evaluated_once)
     {
-        std::cout << __FILE__ << __LINE__ << std::endl;
         ctx->t_load_us = ggml_time_us() - ctx->t_start_us;
         ctx->has_evaluated_once = true;
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
     return 0;
 }
 

@@ -228,14 +228,12 @@ int main(int argc, char ** argv)
         // predict
         if (embd.size() > 0)
         {
-            std::cout << __FILE__ << __LINE__ << std::endl;
             // infinite text generation via context swapping
             // if we run out of context:
             // - take the n_keep first tokens from the original prompt (via n_past)
             // - take half of the last (n_ctx - n_keep) tokens and recompute the logits in a batch
             if (n_past + (int) embd.size() > n_ctx)
             {
-                std::cout << __FILE__ << __LINE__ << std::endl;
                 const int n_left = n_past - params.n_keep;
 
                 n_past = params.n_keep;
@@ -243,17 +241,13 @@ int main(int argc, char ** argv)
                 // insert n_left/2 tokens at the start of embd from last_n_tokens
                 embd.insert(embd.begin(), last_n_tokens.begin() + n_ctx - n_left/2 - embd.size(), last_n_tokens.end() - embd.size());
             }
-            std::cout << __FILE__ << __LINE__ << std::endl;
 
             if(llama_eval(ctx, embd.data(), embd.size(), n_past, params.n_threads))
             {
-                std::cout << __FILE__ << __LINE__ << std::endl;
                 fprintf(stderr, "%s : failed to eval\n", __func__);
                 return 1;
             }
-            std::cout << __FILE__ << __LINE__ << std::endl;
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
 
         n_past += embd.size();
         embd.clear();
@@ -261,7 +255,6 @@ int main(int argc, char ** argv)
         if ((int) embd_inp.size() <= n_consumed && !is_interacting)
         {
             // out of user input, sample next token
-            std::cout << __FILE__ << __LINE__ << std::endl;
             const int32_t top_k          = params.top_k;
             const float   top_p          = params.top_p;
             const float   temp           = params.temp;
@@ -306,7 +299,6 @@ int main(int argc, char ** argv)
         else
         {
             // some user input remains from prompt or interaction, forward it to processing
-            std::cout << __FILE__ << __LINE__ << std::endl;
             while ((int) embd_inp.size() > n_consumed)
             {
                 embd.push_back(embd_inp[n_consumed]);
@@ -321,25 +313,20 @@ int main(int argc, char ** argv)
         // display text
         if (!input_noecho)
         {
-            std::cout << __FILE__ << __LINE__ << std::endl;
             for(auto id : embd)
                 printf("%s", llama_token_to_str(ctx, id));
 
             fflush(stdout);
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
         // reset color to default if we there is no pending user input
         if (!input_noecho && (int)embd_inp.size() == n_consumed) {
             set_console_color(con_st, CONSOLE_COLOR_DEFAULT);
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
 
         // in interactive mode, and not currently processing queued inputs;
         // check if we should prompt the user for more
         if (params.interactive && (int) embd_inp.size() <= n_consumed)
         {
-            std::cout << __FILE__ << __LINE__ << std::endl;
-
             // check for reverse prompt
             if (params.antiprompt.size()) {
                 std::string last_output;
@@ -399,10 +386,12 @@ int main(int argc, char ** argv)
 
                 // Add tokens to embd only if the input buffer is non-empty
                 // Entering a empty line lets the user pass control back
-                if (buffer.length() > 1) {
+                if (buffer.length() > 1)
+                {
 
                     // instruct mode: insert instruction prefix
-                    if (params.instruct && !is_antiprompt) {
+                    if (params.instruct && !is_antiprompt)
+                    {
                         n_consumed = embd_inp.size();
                         embd_inp.insert(embd_inp.end(), inp_pfx.begin(), inp_pfx.end());
                     }
@@ -411,7 +400,8 @@ int main(int argc, char ** argv)
                     embd_inp.insert(embd_inp.end(), line_inp.begin(), line_inp.end());
 
                     // instruct mode: insert response suffix
-                    if (params.instruct) {
+                    if (params.instruct)
+                    {
                         embd_inp.insert(embd_inp.end(), inp_sfx.begin(), inp_sfx.end());
                     }
 
@@ -425,36 +415,30 @@ int main(int argc, char ** argv)
                 is_interacting = false;
             }
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
 
         // end of text token
-        if (embd.back() == llama_token_eos()) {
-            std::cout << __FILE__ << __LINE__ << std::endl;
-            if (params.instruct) {
+        if (embd.back() == llama_token_eos())
+        {
+            if (params.instruct)
+            {
                 is_interacting = true;
-            } else {
+            }
+            else
+            {
                 fprintf(stderr, " [end of text]\n");
                 break;
             }
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
 
         // In interactive mode, respect the maximum number of tokens and drop back to user input when reached.
         if (params.interactive && n_remain <= 0 && params.n_predict != -1)
         {
-            std::cout << __FILE__ << __LINE__ << std::endl;
             n_remain = params.n_predict;
             is_interacting = true;
         }
-        std::cout << __FILE__ << __LINE__ << std::endl;
     }
-    std::cout << __FILE__ << __LINE__ << std::endl;
 
-#if defined (_WIN32)
-    signal(SIGINT, SIG_DFL);
-#endif
-
-    llama_print_timings(ctx);
+    // llama_print_timings(ctx);
     llama_free(ctx);
 
     set_console_color(con_st, CONSOLE_COLOR_DEFAULT);
