@@ -31,8 +31,60 @@ void sigint_handler(int signo)
     }
 }
 
+// You are an English language teacher assistant. Write a short story about a Hamster and his friend Sparrow. Leave some words missing so the student have to fill them
+
 // Hello, Vicuna! You are an artificial intelligence meant to answer questions and complete tasks. \
 At first, tell me, what is your name?
+
+/*Hello, Vicuna! You are an artificial intelligence meant to convert commands from a natural language form into a json objects, suitable for automatic processing. Each JSON object consists of two fields: "device_id" - it is just a name of the device (for example "light" or "computer"); and "action" meant which action should to be performed with the device (for example "turn_off").
+Here is the first command for you: Please, turn off the light. Convert it to a json */
+
+/* You are an interface designed to convert human phrases into JSON objects. The target JSON contains only the following fields: "object", "action", "where" and "when". If a person asks you, for example, "Turn off the light", the result will be {"object": "light", "action": "turnOff", "where":"", "when":"now"}. If a person asks you something abstract, for example "what's the weather today", you responce should be the following: {"object": "weather", "action": "search", "where": "defaultCity", "when": "today"}.\
+Today is 2023-04-21, 1:04am. Your first task: convert the phrase "Please turn on the lights at 8 am" */
+
+/*
+Below is an instruction that describes a task. Write a response that appropriately completes the request.\
+\
+### Instruction:\
+Come up with a dialog using the following expressions: "Bob’s your uncle!", "Ace!", "Sod’s Law!", "In donkey’s years", "Lost the plot", "Faffing around", "Greasy spoon"\
+\
+### Input:\
+\
+\
+### Response:
+
+*/
+
+/*
+Seeds:
+1681764171
+1682027940
+*/
+
+/*
+Come up with a dialog using the following expressions: "Bob’s your uncle!", "Ace!", "Sod’s Law!", "In donkey’s years", "Lost the plot", "Faffing around", "Greasy spoon"
+
+Voice 1: "I can't believe you just said 'Bob's your uncle!' That's a really outdated expression, isn't it?"
+
+Voice 2: "Yeah, I know what you mean. It sounds like something from the olden days. But hey, who doesn't love a good ol' fashioned phrase? And 'Ace!' is one of my personal faves."
+
+Voice 1: "True, true. And speaking of faves, what about 'Sod's Law'? I heard someone say that recently, and it made me chuckle."
+
+Voice 2: "Oh yeah! That's another classic. But honestly, when you think about it, all these expressions are just weird little quirks of our language. Like, why do we say 'donkey's years'? What's the deal with that?"
+
+Voice 1: "I have no idea! And what about 'Lost the plot'? Do people still use that one?"
+
+Voice 2: "Definitely! I heard it just the other day. But my personal favorite is 'faffing around'. I mean, who doesn't love a good old-fashioned British insult?"
+
+Voice 1: "Haha, that one's definitely up there. And what about 'greasy spoon'? Is that another Britishism?"
+
+Voice 2: "Yeah, it is! But I've heard it used in the States too. Maybe it's just a general expression for a dive of a diner or something."
+*/
+
+/*
+sudo ./main -m ../models/koala-13B-4bit-128g.GGML.bin -ins --mlock
+
+*/
 
 int main(int argc, char ** argv)
 {
